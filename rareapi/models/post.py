@@ -1,9 +1,9 @@
 from django.db import models
 
-from .categories import Category
+from .category import Category
 
 class Post(models.Model):
-    user = models.CharField(max_length=55)
+    rareuser = models.ForeignKey("rareapi.rareuser", on_delete=models.SET_NULL, null=True)
     category = models.ForeignKey(Category,
                                  on_delete=models.CASCADE,
                                  related_name="categories")

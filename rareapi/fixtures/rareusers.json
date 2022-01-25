@@ -1,0 +1,13 @@
+[
+    {
+      "model": "rareapi.rareuser",
+      "pk": 1,
+      "fields": {
+        "bio": "I love puppies and glitter",
+        "profile_image_url": "https://media.istockphoto.com/photos/christmas-tree-with-baubles-and-blurred-shiny-lights-picture-id1179032100?k=20&m=1179032100&s=612x612&w=0&h=GY7SDX2_9vECRjbvcR0DDp6s3hGV0l8VijMMkJvudTU=",
+        "created_on": "2021-12-01T02:42:27.471Z",
+        "active": true,
+        "user_id": 1
+      }
+    }
+  ]
