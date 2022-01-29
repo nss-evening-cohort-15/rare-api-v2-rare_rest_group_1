@@ -58,9 +58,9 @@ def register_user(request):
     rareuser = RareUser.objects.create(
         bio=request.data['bio'],
         user=new_user,
-        profile_image_url=request.data['profile_image_url'],
-        created_on=request.data['created_on'],
-        active=request.data['active']
+        # profile_image_url=request.data['profile_image_url'],
+        # created_on=request.data['created_on'],
+        # active=request.data['active']
     )
 
     # Use the REST Framework's token generator on the new user account
