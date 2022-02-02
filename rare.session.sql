@@ -1,3 +1,3 @@
-SELECT * FROM auth_user
-SELECT * FROM rareapi_rareuser
-DELETE FROM auth_user WHERE id > 1 and id < 10
+SELECT * FROM rareapi_postsSELECT * FROM rareapi_post
+
+DELETE FROM rareapi_post WHERE id>1
