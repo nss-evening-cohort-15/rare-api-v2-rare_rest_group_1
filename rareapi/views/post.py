@@ -77,31 +77,28 @@ class PostView(ViewSet):
 
         except ValidationError as ex:
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
-        
-    def edit(self, request, pk=None):
+       
+    def update(self, request, pk=None):
         """Handle PUT requests for a game
 
         Returns:
             Response -- Empty body with 204 status code
         """
         rareuser = RareUser.objects.get(user=request.auth.user)
-
+        category = Category.objects.get(pk=request.data["categoryId"])
         # Do mostly the same thing as POST, but instead of
         # creating a new instance of Post, get the game record
         # from the database whose primary key is `pk`
         post = Post.objects.get(pk=pk)
-        post.rareuser = request.data["rareuser"]
-        post.category = request.data["category"]
+        post.rareuser = rareuser
+        # post.category = request.data["category"]
         post.title = request.data["title"]
         post.publication_date = request.data["publicationDate"]
         post.image_url = request.data["imageUrl"]
         post.content = request.data["content"]
-        post.approved = request.data["approved"]
-
-        category = Category.objects.get(pk=request.data["categoryId"])
+        post.approved = False
         post.category = category
         post.save()
-
         # 204 status code means everything worked but the
         # server is not sending back any data in the response
         return Response({}, status=status.HTTP_204_NO_CONTENT)
