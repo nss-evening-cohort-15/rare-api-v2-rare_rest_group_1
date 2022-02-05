@@ -31,42 +31,38 @@ class CategoryView(ViewSet):
         #    http://localhost:8000/posts?category=1
         #
         # That URL will retrieve all tabletop posts
-        categories = Category.objects.all()
+      
 
         serializer = CategorySerializer(
             categories, many=True, context={'request': request})
         return Response(serializer.data)
-    # def create(self, request):
-    #     """Handle POST operations
-    #     Returns:
-    #         Response -- JSON serialized a post instance
-    #     """
-
-    #     # Uses the token passed in the `Authorization` header
-    #     rareuser = RareUser.objects.get(user=request.auth.user)
-        
-    #     # Create a new Python instance of the Post class
-    #     # and set its properties from what was sent in the
-    #     # body of the request from the client.
-    #     post = Post()
-    #     post.title = request.data["title"]
-
-    #     post.publication_date = request.data["publicationDate"]
-    #     post.image_url = request.data["imageUrl"]
-    #     post.rareuser = rareuser
-    #     post.content = request.data["content"]
-    #     post.approved = request.data["approved"]
     
-    #     category = Category.objects.get(pk=request.data["categoryId"])
-    #     post.category = category
+    def create(self, request):
+        """Handle POST operations
+        Returns:
+            Response -- JSON serialized a category instance
+        """
 
-    #     try:
-    #         post.save()
-    #         serializer = PostSerializer(post, context={'request': request})
-    #         return Response(serializer.data)
+        # Uses the token passed in the `Authorization` header
+        category = Category()
+        
+        # Create a new Python instance of the Post class
+        # and set its properties from what was sent in the
+        # body of the request from the client.
+       
+        category.label = request.data["label"]
 
-    #     except ValidationError as ex:
-    #         return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
+    
+    #     category = Category.objects.get(pk=request.data["category_id"])
+    #     category.category = category
+
+        try:
+            category.save()
+            serializer = CategorySerializer(category, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except ValidationError as ex:
+            return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
         
 
 
