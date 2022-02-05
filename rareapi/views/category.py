@@ -1,13 +1,17 @@
+from webbrowser import get
 from django.core.exceptions import ValidationError
 from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from rareapi.models import Category
+from rareapi.models import Category, RareUser
 
 class CategoryView(ViewSet):
+    # permission_classes' = [IsAdminUser] has Objects.permissions
     """Rare categories"""
     def retrieve(self, request, pk=None):
         """Handle GET requests for single category
@@ -23,7 +27,8 @@ class CategoryView(ViewSet):
             return HttpResponseServerError(ex)
 
     def list(self, request):
-
+    
+    # @action(methods=['post', 'delete'], detail=True)
         # Get all game records from the database
         categories = Category.objects.all() 
 
@@ -64,6 +69,30 @@ class CategoryView(ViewSet):
         except ValidationError as ex:
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
         
+    def destroy(self, request, pk=None,
+                permission_classes=[IsAdminUser]):
+        """Handle DELETE requests for a single category
+
+        Returns:
+            Response -- 200, 404, or 500 status code
+        """
+        if not request.auth.user.is_staff:
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+## this makes it so that we can only delete if we are admin/authorized
+        try:
+            category = Category.objects.get(pk=pk)
+            category.delete()
+
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        except Category.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    @action(methods=["get"], detail=False, permission_classes=[IsAdminUser])
+    def test(self, request):
+        return Response('It worked')
 
 
 
@@ -77,3 +106,4 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ( 'id', 'label')
+
