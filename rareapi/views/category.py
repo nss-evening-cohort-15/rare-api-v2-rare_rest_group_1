@@ -1,3 +1,4 @@
+from unicodedata import category
 from webbrowser import get
 from django.core.exceptions import ValidationError
 from rest_framework import status
@@ -69,6 +70,21 @@ class CategoryView(ViewSet):
         except ValidationError as ex:
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
         
+    def update(self, request, pk=None,  permission_classes=[IsAdminUser]):
+        """Handle PUT requests for a category
+        
+        Returns:
+            Response -- Empty body with 204 status code
+        """
+        if not request.auth.user.is_staff:
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+        
+        category = Category.objects.get(pk=pk)
+        category.label = request.data["label"]
+        category.save()
+        
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
+        
     def destroy(self, request, pk=None,
                 permission_classes=[IsAdminUser]):
         """Handle DELETE requests for a single category
@@ -90,6 +106,7 @@ class CategoryView(ViewSet):
 
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
     @action(methods=["get"], detail=False, permission_classes=[IsAdminUser])
     def test(self, request):
         return Response('It worked')
