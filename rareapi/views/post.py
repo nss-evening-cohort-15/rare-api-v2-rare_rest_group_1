@@ -54,7 +54,7 @@ class PostView(ViewSet):
 
         # Uses the token passed in the `Authorization` header
         rareuser = RareUser.objects.get(user=request.auth.user)
-        category = Category.objects.get(pk=request.data["categoryId"])
+        #category = Category.objects.get(pk=request.data["categoryId"])
         # Create a new Python instance of the Post class
         # and set its properties from what was sent in the
         # body of the request from the client.
