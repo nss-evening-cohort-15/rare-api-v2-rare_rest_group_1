@@ -1,18 +1,29 @@
 """View module for handling requests about games"""
+from pickle import TRUE
 from django.core.exceptions import ValidationError
 from rest_framework import status
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
-from rest_framework import serializers
-from rest_framework import status
-from rareapi.models import Post,RareUser,Category, rareuser
+from rest_framework import serializers,status
+from rest_framework.permissions import IsAdminUser
+from rareapi.models import Post,RareUser,Category, post
+from rest_framework.decorators import permission_classes
+from rest_framework.decorators import action, permission_classes
 
+# @permission_classes([IsAdminUser])
 class PostView(ViewSet):
+    #Marking extra actions for routing
+    @action(detail=False,permission_classes = [IsAdminUser])
+    def unapproved(self, request):
+        unapproved = Post.objects.all().filter(category__id=1)
+
+        serializer = PostSerializer(unapproved, many=True)
+        return Response(serializer.data)
+        
     """Rare posts"""
-
     def list(self, request):
-
+        
         # Get all game records from the database
         posts = Post.objects.all() 
 
@@ -26,14 +37,16 @@ class PostView(ViewSet):
 
         serializer = PostSerializer(
             posts, many=True, context={'request': request})
-        return Response(serializer.data)
+        return Response(serializer.data)     
     
     def retrieve(self, request, pk=None):
+        
         """Handle GET requests for single post
 
         Returns:
             Response -- JSON serialized post instance
         """
+        
         try:
             # `pk` is a parameter to this function, and
             # Django parses it from the URL route parameter
@@ -121,7 +134,6 @@ class PostView(ViewSet):
 
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 
 class PostSerializer(serializers.ModelSerializer):
